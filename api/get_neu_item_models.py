@@ -37,12 +37,16 @@ def checkSnbt(path: Path):
 
 
 def write_csv(fileName: str, items: list[str]):
-    with open(fileName, "w", encoding="utf-8") as file:
-        for neuName in items:
-            file.write(neuName + "\n")
+    with open(fileName + ".csv", "w", encoding="utf-8") as file:
+        file.write("\n".join(items))
 
 
-def filterBazaar(items: list[str]) -> list[str]:
+def write_ssv(fileName: str, items: list[str]):
+    with open(fileName + ".txt", "w", encoding="utf-8") as file:
+        file.write(" ".join(items))
+
+
+def filterBazaar(items: list[str]) -> tuple[list[str], list[str]]:
     inBazaar = set()
 
     bazaarStocksPath = ConstantsPath.joinpath("bazaarstocks.json")
@@ -56,11 +60,14 @@ def filterBazaar(items: list[str]) -> list[str]:
     inBazaar.update(products)
 
     bazaarable = []
+    nonBazaarable = []
     for item in items:
         if item in inBazaar:
             bazaarable.append(item)
+        else:
+            nonBazaarable.append(item)
 
-    return bazaarable
+    return bazaarable, nonBazaarable
 
 
 def Main():
@@ -68,10 +75,14 @@ def Main():
         for file in getSnbtFiles(version):
             checkSnbt(file)
 
-    write_csv("neu_missing_item_model.csv", files)
+    write_csv("neu_missing_item_model", files)
+    write_ssv("neu_missing_item_model", files)
 
-    bazaarable = filterBazaar(files)
-    write_csv("bazaarable.csv", bazaarable)
+    bazaarable, nonBazaarable = filterBazaar(files)
+    write_csv("bazaarable", bazaarable)
+    write_ssv("bazaarable", bazaarable)
+    write_csv("nonBazaarable", nonBazaarable)
+    write_ssv("nonBazaarable", nonBazaarable)
 
 
 if __name__ == "__main__":
