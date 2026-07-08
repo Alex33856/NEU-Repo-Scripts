@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import requests
+
 from alex.check_snbt import getSnbtFiles
 from alex.nbt_utils import parse_nbt
 from alex.utils import getSNBTVersions, ConstantsPath
@@ -41,12 +43,17 @@ def write_csv(fileName: str, items: list[str]):
 
 
 def filterBazaar(items: list[str]) -> list[str]:
-    bazaarStocksPath = ConstantsPath.joinpath("bazaarstocks.json")
     inBazaar = set()
+
+    bazaarStocksPath = ConstantsPath.joinpath("bazaarstocks.json")
     with open(bazaarStocksPath) as json_file:
         bazaarStocks = json.load(json_file)
-    for item in bazaarStocks:
-        inBazaar.add(item['id'])
+        for item in bazaarStocks:
+            inBazaar.add(item['id'])
+
+    bazaarData = requests.get("https://api.hypixel.net/v2/skyblock/bazaar").json()
+    products = bazaarData["products"].keys()
+    inBazaar.update(products)
 
     bazaarable = []
     for item in items:
