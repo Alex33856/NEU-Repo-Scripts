@@ -4,6 +4,8 @@ from os.path import isfile
 from pathlib import Path
 from typing import Optional
 
+import requests
+
 with open("../path.txt", "r", encoding="UTF-8") as f:
     BasePath = Path(f.readline().strip())
 
@@ -49,3 +51,12 @@ def get_lore_for_file(path: Path) -> Optional[list[str]]:
     with open(path, "r", encoding="UTF-8") as f:
         item = json.load(f)
     return item["lore"]
+
+bazaar_products: Optional[list[str]] = None
+def get_bazaar_products() -> list[str]:
+    global bazaar_products
+    if bazaar_products is None:
+        bazaarData = requests.get("https://api.hypixel.net/v2/skyblock/bazaar").json()
+        bazaar_products = products = bazaarData["products"].keys()
+        return products
+    return bazaar_products

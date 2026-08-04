@@ -1,17 +1,13 @@
 import json
 
-import requests
-
-from alex.utils import ConstantsPath, ItemsPath, check_for_item
+from alex.utils import ConstantsPath, ItemsPath, check_for_item, get_bazaar_products
 
 bazaarStocksPath = ConstantsPath.joinpath("bazaarstocks.json")
 with open(bazaarStocksPath) as json_file:
     bazaarStocks = json.load(json_file)
 
 itemNames = ItemsPath
-
-bazaarData = requests.get("https://api.hypixel.net/v2/skyblock/bazaar").json()
-products = bazaarData["products"].keys()
+products = get_bazaar_products()
 
 for entry in bazaarStocks:
     if entry['stock'] not in products:
