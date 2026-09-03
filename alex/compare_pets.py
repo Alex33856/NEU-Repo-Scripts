@@ -29,7 +29,7 @@ def connect() -> tuple[connection.Connection, cursor.Cursor]:
 
 def getPetsDb() -> list[Pet]:
     con, cur = connect()
-    cur.execute("SELECT pet_id, pet_level, lore_lines FROM pet_data WHERE pet_level != 102;")
+    cur.execute("SELECT pet_id, pet_level, lore_lines FROM pet_data WHERE pet_level != 102 ORDER BY pet_id, pet_level;")
     data = cur.fetchall()
 
     pets = []
@@ -101,17 +101,25 @@ def comparePet(pet: Pet) -> bool:
     if appliedLore is None:
         return False
 
-    if knownLore == appliedLore:
-        return True
-
     newLore = copy(appliedLore)
     for i, line in enumerate(appliedLore):
         newLore[i] = line.replace(".0", "")
 
-    if knownLore == newLore:
+    hasChanges = False
+    for i, line in enumerate(knownLore):
+        if len(appliedLore) <= i:
+            hasChanges = True
+            break
+        genLine = appliedLore[i]
+        genLineClean = newLore[i]
+        if line == genLine or line == genLineClean:
+            continue
+        hasChanges = True
+
+    if not hasChanges:
         return True
 
-    print(f"Mismatch for {pet.pet_id} lvl {pet.pet_level}")
+    print(f"== Mismatch for {pet.pet_id} lvl {pet.pet_level} ==")
 
     if (kLL := len(knownLore)) != (aLL := len(appliedLore)):
         print(f"Size diff: {kLL} vs {aLL}")
@@ -126,6 +134,12 @@ def comparePet(pet: Pet) -> bool:
 
         print(f"Differing Line:\n- {line}\n+ {genLine}")
 
+    for line in appliedLore[i + 1:]:
+        if line in knownLore:
+            continue
+        print(f"New line:\n+ {line}")
+
+    print()
     return False
 
 
@@ -138,6 +152,7 @@ def Main():
             continue
         if not comparePet(pet):
             mismatching.add(pet.pet_id)
+    print(" ".join(mismatching))
 
 
 if __name__ == "__main__":
