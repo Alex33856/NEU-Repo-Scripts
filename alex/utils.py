@@ -19,7 +19,10 @@ rarityMap = [
     "RARE",
     "EPIC",
     "LEGENDARY",
-    "MYTHIC"
+    "MYTHIC",
+    "DIVINE",
+    "SPECIAL",
+    "VERY_SPECIAL"
 ]
 
 
