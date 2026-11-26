@@ -26,11 +26,11 @@ def checkItemSnbt(path: Path):
             print(ex.args[1], ex.args[0])
             return
 
-    if not data["components"].get("minecraft:tooltip_display"):
-        print(f"warning: {fileAndDir} is missing tooltip display!")
+    # if not data["components"].get("minecraft:tooltip_display"):
+    #     print(f"warning: {fileAndDir} is missing tooltip display!")
 
     if not data["components"].get("minecraft:tooltip_style"):
-        excludedPaths = ["_MONSTER", "_NPC", "_MINIBOSS", "_BOSS", "_ANIMAL"]
+        excludedPaths = ["_MONSTER", "_NPC", "_CREATURE", "_SC", "_BOSS", "_MINIBOSS"]
         shouldPrint = True
         for excludedPath in excludedPaths:
             if excludedPath in fileAndDir:
